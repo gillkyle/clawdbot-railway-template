@@ -46,6 +46,9 @@ ENV NODE_ENV=production
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
+    curl \
+    iptables \
+  && curl -fsSL https://tailscale.com/install.sh | sh \
   && rm -rf /var/lib/apt/lists/*
 
 # `openclaw update` expects pnpm. Provide it in the runtime image.
@@ -65,10 +68,12 @@ RUN printf '%s\n' '#!/usr/bin/env bash' 'exec node /openclaw/dist/entry.js "$@"'
   && chmod +x /usr/local/bin/openclaw
 
 COPY src ./src
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 # The wrapper listens on $PORT.
 # IMPORTANT: Do not set a default PORT here.
 # Railway injects PORT at runtime and routes traffic to that port.
 # If we force a different port, deployments can come up but the domain will route elsewhere.
-EXPOSE 3000
-CMD ["node", "src/server.js"]
+EXPOSE 8080
+CMD ["./entrypoint.sh"]
