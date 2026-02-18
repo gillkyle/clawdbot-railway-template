@@ -4,7 +4,8 @@ set -e
 # Start Tailscale daemon in userspace networking mode (no TUN device needed in containers).
 if command -v tailscaled &>/dev/null && [ -n "$TS_AUTHKEY" ]; then
   echo "[entrypoint] Starting tailscaled (userspace networking)..."
-  tailscaled --tun=userspace-networking --state=/var/lib/tailscale/tailscaled.state &
+  mkdir -p /data/.tailscale
+  tailscaled --tun=userspace-networking --state=/data/.tailscale/tailscaled.state &
   sleep 2
 
   echo "[entrypoint] Connecting to tailnet..."
