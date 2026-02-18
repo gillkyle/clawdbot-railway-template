@@ -5,7 +5,7 @@ set -e
 if command -v tailscaled &>/dev/null && [ -n "$TS_AUTHKEY" ]; then
   echo "[entrypoint] Starting tailscaled (userspace networking)..."
   mkdir -p /data/.tailscale
-  tailscaled --tun=userspace-networking --state=/data/.tailscale/tailscaled.state &
+  tailscaled --tun=userspace-networking --state=/data/.tailscale/tailscaled.state --statedir=/data/.tailscale &
   sleep 2
 
   echo "[entrypoint] Connecting to tailnet..."
